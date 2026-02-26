@@ -1,0 +1,4 @@
+{
+    "safe_ips": ["127.0.0.1", "10.0.0.1", "192.168.1.5"],
+    "safe_users": ["ceo_john", "breakglass_admin", "sentry_service"]
+}

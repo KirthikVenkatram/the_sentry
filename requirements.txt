@@ -1,0 +1,7 @@
+mcp
+fastapi
+uvicorn[standard]
+requests
+elasticsearch
+python-dotenv
+faker
