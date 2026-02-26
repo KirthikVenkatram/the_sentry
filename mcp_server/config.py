@@ -16,7 +16,7 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 GITHUB_REPO = os.getenv("GITHUB_REPO", "")
 
 # 3. ELASTIC
-ELASTIC_CLOUD_ID = os.getenv("ELASTIC_CLOUD_ID", "")
+ELASTIC_URL     = os.getenv("ELASTIC_URL", "")
 ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY", "")
 
 # 4. FILE PERSISTENCE (local JSON state)

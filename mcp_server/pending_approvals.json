@@ -1,0 +1,117 @@
+[
+  {
+    "approval_id": "21372A4B",
+    "timestamp": "2026-02-26T20:46:34.651700",
+    "action": "Disable AD account for 'admin'",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T20:47:07.818029"
+  },
+  {
+    "approval_id": "30AA5F32",
+    "timestamp": "2026-02-26T21:21:40.077201",
+    "action": "Disable AD account for 'admin'",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T21:22:10.812920"
+  },
+  {
+    "approval_id": "78757AF8",
+    "timestamp": "2026-02-26T21:21:41.608350",
+    "action": "Block 185.220.101.5 + isolate 10.0.0.5",
+    "target": "10.0.0.5",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "FD9F7FAD",
+    "timestamp": "2026-02-26T21:21:59.528258",
+    "action": "Disable AD account for 'admin'",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "3BFDDE76",
+    "timestamp": "2026-02-26T21:22:17.984862",
+    "action": "Block 185.220.101.5 + isolate 10.0.0.5",
+    "target": "10.0.0.5",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "D87763B5",
+    "timestamp": "2026-02-26T21:22:19.622926",
+    "action": "Block port scanner 45.33.22.11",
+    "target": "45.33.22.11",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "06495138",
+    "timestamp": "2026-02-26T21:22:21.262022",
+    "action": "Isolate host 10.0.0.22",
+    "target": "10.0.0.22",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "82EA019E",
+    "timestamp": "2026-02-26T21:22:22.899549",
+    "action": "Disable account 'bob.jones' (privilege escalation)",
+    "target": "10.0.0.45",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "BBE5A04B",
+    "timestamp": "2026-02-26T21:24:38.762295",
+    "action": "Disable account 'bob.jones' (privilege escalation)",
+    "target": "10.0.0.45",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "C415F6B6",
+    "timestamp": "2026-02-26T21:32:45.401116",
+    "action": "Isolate host 10.0.0.22",
+    "target": "10.0.0.22",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "90E73982",
+    "timestamp": "2026-02-26T21:43:52.628058",
+    "action": "Disable AD account for 'admin'",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "A1361E0A",
+    "timestamp": "2026-02-26T21:45:56.515272",
+    "action": "Block port scanner 45.33.22.11",
+    "target": "45.33.22.11",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "6D74EFF4",
+    "timestamp": "2026-02-26T21:47:05.342861",
+    "action": "Disable AD account for 'admin'",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "13B12545",
+    "timestamp": "2026-02-26T21:48:06.393878",
+    "action": "Disable AD account 'admin' \u2014 1500 failed logins from 203.0.113.42",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T21:48:15.026984"
+  }
+]

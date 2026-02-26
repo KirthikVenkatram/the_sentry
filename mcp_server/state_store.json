@@ -1,1 +1,32 @@
-{}
+[
+  {
+    "timestamp": "2026-02-26T20:45:41.877438",
+    "sender": "Alpha",
+    "confidence": 10,
+    "message": "BRUTE_FORCE [LOW]: Disabled 'testuser' \u2014 attacker 1.2.3.4"
+  },
+  {
+    "timestamp": "2026-02-26T21:05:13.420793",
+    "sender": "Alpha",
+    "confidence": 35,
+    "message": "IMPOSSIBLE_TRAVEL [MEDIUM]: Disabled '' (login from )"
+  },
+  {
+    "timestamp": "2026-02-26T21:12:41.355718",
+    "sender": "Alpha",
+    "confidence": 10,
+    "message": "BRUTE_FORCE [LOW]: Disabled 'unknown' \u2014 attacker unknown (0 attempts)"
+  },
+  {
+    "timestamp": "2026-02-26T21:17:39.144492",
+    "sender": "Alpha",
+    "confidence": 10,
+    "message": "BRUTE_FORCE [LOW]: Disabled 'unknown' \u2014 attacker unknown (0 attempts)"
+  },
+  {
+    "timestamp": "2026-02-26T21:22:24.540107",
+    "sender": "Alpha",
+    "confidence": 60,
+    "message": "IMPOSSIBLE_TRAVEL [HIGH]: Disabled 'john.smith' \u2014 login from Sudan"
+  }
+]

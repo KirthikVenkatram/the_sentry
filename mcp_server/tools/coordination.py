@@ -32,7 +32,7 @@ def post_a2a_message(agent_name: str, message: str, confidence: int) -> str:
         "confidence": confidence,
         "message":    message,
     }
-    context = load_json_file(STATE_STORE_PATH)
+    context = load_json_file(STATE_STORE_PATH, default=[])
     context.append(entry)
     save_json_file(STATE_STORE_PATH, context)
 

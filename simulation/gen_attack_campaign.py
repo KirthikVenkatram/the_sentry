@@ -6,9 +6,9 @@ Simulates 6 real-world attack scenarios against your Elastic indices.
 Usage:
   python3 simulation/gen_attack_campaign.py              # run all scenarios
   python3 simulation/gen_attack_campaign.py --scenario 1 # run one scenario
+  python3 simulation/gen_attack_campaign.py --list       # list scenarios
 """
 
-import time
 import random
 import os
 import argparse
@@ -18,24 +18,36 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ELASTIC_CLOUD_ID = os.getenv("ELASTIC_CLOUD_ID", "")
-ELASTIC_API_KEY  = os.getenv("ELASTIC_API_KEY", "")
+ELASTIC_URL     = os.getenv("ELASTIC_URL", "")
+ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY", "")
 
 AUTH_INDEX = "sentry-auth-logs"
 NET_INDEX  = "sentry-network-logs"
 
-HIGH_RISK_COUNTRIES = ["Sudan", "Russia", "North Korea", "Iran", "Belarus"]
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def ts():
+    from datetime import timezone
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+def auth_doc(source_doc):
+    """Wrap auth log doc for data stream bulk insert."""
+    return {"_index": AUTH_INDEX, "_op_type": "create", "_source": source_doc}
+
+def net_doc(source_doc):
+    """Wrap network log doc for data stream bulk insert."""
+    return {"_index": NET_INDEX, "_op_type": "create", "_source": source_doc}
 
 # ── Connection ────────────────────────────────────────────────────────────────
 
 def connect_to_elastic():
-    print("🔌 Connecting to Elastic Cloud...")
+    print("🔌 Connecting to Elastic Serverless...")
     try:
-        client = Elasticsearch(cloud_id=ELASTIC_CLOUD_ID, api_key=ELASTIC_API_KEY)
+        client = Elasticsearch(hosts=[ELASTIC_URL], api_key=ELASTIC_API_KEY)
         if client.ping():
             print(f"✅ Connected: {client.info()['cluster_name']}")
             return client
-        print("❌ Connection failed. Check ELASTIC_CLOUD_ID and ELASTIC_API_KEY in .env")
+        print("❌ Connection failed. Check ELASTIC_URL and ELASTIC_API_KEY in .env")
     except Exception as e:
         print(f"❌ Error: {e}")
     return None
@@ -43,145 +55,118 @@ def connect_to_elastic():
 # ── Scenario Generators ───────────────────────────────────────────────────────
 
 def scenario_1_brute_force(actions):
-    """HIGH severity — 300 failed logins from Sudan → triggers human approval"""
     print("\n🔥 SCENARIO 1: Brute Force Attack (HIGH severity)")
-    attacker_ip  = "203.0.113.42"
-    target_user  = "admin"
-    country      = "Sudan"
-
     for _ in range(300):
-        actions.append({"_index": AUTH_INDEX, "_source": {
-            "@timestamp":      datetime.now().isoformat(),
-            "event":           {"category": "authentication", "outcome": "failure"},
-            "source":          {"ip": attacker_ip, "geo": {"country_name": country}},
-            "user":            {"name": target_user},
-            "error":           {"message": "Invalid password"},
-            "host":            {"name": "auth-server-01"},
-            "scenario":        "BRUTE_FORCE",
-            "tags":            ["security_incident", "brute_force"],
-        }})
-    print(f"   ↳ 300 failed logins from {attacker_ip} ({country}) targeting '{target_user}'")
+        actions.append(auth_doc({
+            "@timestamp": ts(),
+            "event":      {"category": "authentication", "outcome": "failure"},
+            "source":     {"ip": "203.0.113.42", "geo": {"country_name": "Sudan"}},
+            "user":       {"name": "admin"},
+            "error":      {"message": "Invalid password"},
+            "host":       {"name": "auth-server-01"},
+            "scenario":   "BRUTE_FORCE",
+            "tags":       ["security_incident", "brute_force"],
+        }))
+    print("   ↳ 300 failed logins from 203.0.113.42 (Sudan) targeting 'admin'")
 
 
 def scenario_2_impossible_travel(actions):
-    """MEDIUM severity — legit US login then immediate Sudan login"""
     print("\n🔥 SCENARIO 2: Impossible Travel (MEDIUM severity)")
-    user         = "john.smith"
-    us_ip        = "192.168.1.100"
-    sudan_ip     = "197.157.2.50"
-    now          = datetime.now()
-
-    # Legitimate US login 10 min ago
-    actions.append({"_index": AUTH_INDEX, "_source": {
-        "@timestamp": (now - timedelta(minutes=10)).isoformat(),
+    now = datetime.utcnow()
+    actions.append(auth_doc({
+        "@timestamp": (now - timedelta(minutes=10)).isoformat() + "Z",
         "event":      {"category": "authentication", "outcome": "success"},
-        "source":     {"ip": us_ip, "geo": {"country_name": "United States"}},
-        "user":       {"name": user},
+        "source":     {"ip": "192.168.1.100", "geo": {"country_name": "United States"}},
+        "user":       {"name": "john.smith"},
         "host":       {"name": "vpn-gateway-01"},
         "scenario":   "IMPOSSIBLE_TRAVEL",
         "tags":       ["security_incident", "impossible_travel"],
-    }})
-
-    # Suspicious Sudan login right now
-    actions.append({"_index": AUTH_INDEX, "_source": {
-        "@timestamp": now.isoformat(),
+    }))
+    actions.append(auth_doc({
+        "@timestamp": now.isoformat() + "Z",
         "event":      {"category": "authentication", "outcome": "success"},
-        "source":     {"ip": sudan_ip, "geo": {"country_name": "Sudan"}},
-        "user":       {"name": user},
+        "source":     {"ip": "197.157.2.50", "geo": {"country_name": "Sudan"}},
+        "user":       {"name": "john.smith"},
         "host":       {"name": "vpn-gateway-01"},
         "scenario":   "IMPOSSIBLE_TRAVEL",
         "tags":       ["security_incident", "impossible_travel"],
-    }})
-    print(f"   ↳ '{user}' logged in from US then Sudan within 10 minutes")
+    }))
+    print("   ↳ 'john.smith' logged in from US then Sudan within 10 minutes")
 
 
 def scenario_3_data_exfiltration(actions):
-    """CRITICAL severity — 6GB exfiltration to Iran"""
     print("\n🔥 SCENARIO 3: Data Exfiltration (CRITICAL severity)")
-    victim_ip = "10.0.0.5"
-    exfil_ip  = "185.220.101.5"
-    country   = "Iran"
-
-    for _ in range(60):     # 60 chunks × ~100MB = ~6GB
-        actions.append({"_index": NET_INDEX, "_source": {
-            "@timestamp":  datetime.now().isoformat(),
+    for _ in range(60):
+        actions.append(net_doc({
+            "@timestamp":  ts(),
             "event":       {"category": "network", "type": "flow", "action": "allow"},
-            "source":      {"ip": victim_ip},
-            "destination": {"ip": exfil_ip, "port": 443,
-                            "geo": {"country_name": country}},
+            "source":      {"ip": "10.0.0.5"},
+            "destination": {"ip": "185.220.101.5", "port": 443,
+                            "geo": {"country_name": "Iran"}},
             "network":     {"bytes": random.randint(100_000_000, 110_000_000)},
             "threat":      {"indicator": "high_volume_upload"},
             "scenario":    "DATA_EXFILTRATION",
             "tags":        ["security_incident", "exfiltration"],
-        }})
-    print(f"   ↳ {victim_ip} sending ~6GB to {exfil_ip} ({country})")
+        }))
+    print("   ↳ 10.0.0.5 sending ~6GB to 185.220.101.5 (Iran)")
 
 
 def scenario_4_port_scan(actions):
-    """HIGH severity — 150 ports scanned"""
     print("\n🔥 SCENARIO 4: Port Scan (HIGH severity)")
-    scanner_ip = "45.33.22.11"
-    target_ip  = "10.0.0.1"
-    ports      = random.sample(range(1, 65535), 150)
-
+    ports = random.sample(range(1, 65535), 150)
     for port in ports:
-        actions.append({"_index": NET_INDEX, "_source": {
-            "@timestamp":  datetime.now().isoformat(),
-            "event":       {"category": "network", "type": "connection", "action": "denied"},
-            "source":      {"ip": scanner_ip, "geo": {"country_name": "Russia"}},
-            "destination": {"ip": target_ip, "port": port},
+        actions.append(net_doc({
+            "@timestamp":  ts(),
+            "event":       {"category": "network", "type": "connection",
+                            "action": "denied"},
+            "source":      {"ip": "45.33.22.11", "geo": {"country_name": "Russia"}},
+            "destination": {"ip": "10.0.0.1", "port": port},
             "network":     {"bytes": 64},
             "scenario":    "PORT_SCAN",
             "tags":        ["security_incident", "port_scan"],
-        }})
-    print(f"   ↳ {scanner_ip} scanned {len(ports)} ports on {target_ip}")
+        }))
+    print(f"   ↳ 45.33.22.11 scanned {len(ports)} ports on 10.0.0.1")
 
 
 def scenario_5_lateral_movement(actions):
-    """HIGH severity — compromised host touching 15 internal servers"""
     print("\n🔥 SCENARIO 5: Lateral Movement (HIGH severity)")
-    source_ip    = "10.0.0.22"     # compromised workstation
-    internal_ips = [f"10.0.0.{i}" for i in range(1, 16)]   # 15 targets
-
+    internal_ips = [f"10.0.0.{i}" for i in range(1, 16)]
     for target in internal_ips:
-        for port in [22, 445, 3389]:    # SSH, SMB, RDP
-            actions.append({"_index": NET_INDEX, "_source": {
-                "@timestamp":  datetime.now().isoformat(),
-                "event":       {"category": "network", "type": "connection", "action": "allow"},
-                "source":      {"ip": source_ip},
+        for port in [22, 445, 3389]:
+            actions.append(net_doc({
+                "@timestamp":  ts(),
+                "event":       {"category": "network", "type": "connection",
+                                "action": "allow"},
+                "source":      {"ip": "10.0.0.22"},
                 "destination": {"ip": target, "port": port},
                 "network":     {"bytes": random.randint(1000, 50000)},
                 "scenario":    "LATERAL_MOVEMENT",
                 "tags":        ["security_incident", "lateral_movement"],
-            }})
-    print(f"   ↳ {source_ip} moved laterally to {len(internal_ips)} hosts via SSH/SMB/RDP")
+            }))
+    print(f"   ↳ 10.0.0.22 moved laterally to {len(internal_ips)} hosts via SSH/SMB/RDP")
 
 
 def scenario_6_privilege_escalation(actions):
-    """HIGH severity — standard user hitting admin endpoints"""
     print("\n🔥 SCENARIO 6: Privilege Escalation (HIGH severity)")
-    user         = "bob.jones"
-    source_ip    = "10.0.0.45"
     admin_routes = [
         "/admin/users", "/admin/config", "/api/v1/admin/reset",
         "/admin/roles", "/admin/audit-logs",
     ]
-
     for route in admin_routes:
         for _ in range(3):
-            actions.append({"_index": AUTH_INDEX, "_source": {
-                "@timestamp": datetime.now().isoformat(),
+            actions.append(auth_doc({
+                "@timestamp": ts(),
                 "event":      {"category": "authentication", "outcome": "failure",
                                "type": "access"},
-                "source":     {"ip": source_ip},
-                "user":       {"name": user, "roles": ["standard"]},
+                "source":     {"ip": "10.0.0.45"},
+                "user":       {"name": "bob.jones", "roles": ["standard"]},
                 "url":        {"path": route},
                 "http":       {"response": {"status_code": 403}},
                 "scenario":   "PRIVILEGE_ESCALATION",
                 "tags":       ["security_incident", "privilege_escalation"],
-            }})
-    print(f"   ↳ '{user}' attempted {len(admin_routes)} admin endpoints × 3 = "
-          f"{len(admin_routes)*3} 403 errors")
+            }))
+    print(f"   ↳ 'bob.jones' attempted {len(admin_routes)} admin endpoints × 3 = "
+          f"{len(admin_routes) * 3} 403 errors")
 
 
 # ── Runner ────────────────────────────────────────────────────────────────────
@@ -204,14 +189,14 @@ SCENARIO_NAMES = {
     6: "Privilege Escalation",
 }
 
+
 def run_campaign(client, scenario_ids=None):
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("🚀 SENTRY LIVE FIRE EXERCISE")
-    print("="*50)
+    print("=" * 50)
 
     actions = []
     ids = scenario_ids or list(SCENARIOS.keys())
-
     for sid in ids:
         if sid in SCENARIOS:
             SCENARIOS[sid](actions)
@@ -223,19 +208,17 @@ def run_campaign(client, scenario_ids=None):
     except Exception as e:
         print(f"❌ Upload Error: {e}")
 
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("🎯 ATTACK CAMPAIGN COMPLETE")
     print("   Kibana alert rules will fire within 5 minutes.")
     print("   Watch your server terminal for incoming webhooks.")
-    print("="*50)
+    print("=" * 50)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sentry Attack Simulator")
-    parser.add_argument(
-        "--scenario", type=int, choices=list(SCENARIOS.keys()),
-        help="Run a single scenario (1-6). Omit to run all."
-    )
+    parser.add_argument("--scenario", type=int, choices=list(SCENARIOS.keys()),
+                        help="Run a single scenario (1-6). Omit to run all.")
     parser.add_argument("--list", action="store_true", help="List all scenarios")
     args = parser.parse_args()
 
