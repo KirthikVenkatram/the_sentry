@@ -228,7 +228,8 @@
     "action": "Disable account 'john.smith' \u2014 login from Sudan",
     "target": "john.smith",
     "risk_score": 60,
-    "status": "PENDING"
+    "status": "APPROVED",
+    "resolved": "2026-02-27T08:16:08.222404"
   },
   {
     "approval_id": "FFAD88B5",
@@ -244,7 +245,8 @@
     "action": "Isolate host 10.0.0.22 \u2014 reached 15 internal hosts",
     "target": "10.0.0.22",
     "risk_score": 60,
-    "status": "PENDING"
+    "status": "APPROVED",
+    "resolved": "2026-02-27T08:16:13.524067"
   },
   {
     "approval_id": "19F6B3F7",
@@ -252,7 +254,8 @@
     "action": "Block 185.220.101.5 + isolate 10.0.0.5 \u2014 31.43GB sent to Iran",
     "target": "10.0.0.5",
     "risk_score": 85,
-    "status": "PENDING"
+    "status": "APPROVED",
+    "resolved": "2026-02-27T08:16:19.244089"
   },
   {
     "approval_id": "D3666033",
@@ -260,7 +263,8 @@
     "action": "Disable account 'bob.jones' \u2014 90 admin endpoint attempts",
     "target": "10.0.0.45",
     "risk_score": 60,
-    "status": "PENDING"
+    "status": "APPROVED",
+    "resolved": "2026-02-27T08:16:24.592180"
   },
   {
     "approval_id": "E52DB77C",
@@ -268,7 +272,8 @@
     "action": "Block scanner 45.33.22.11 \u2014 744 ports scanned",
     "target": "45.33.22.11",
     "risk_score": 85,
-    "status": "PENDING"
+    "status": "APPROVED",
+    "resolved": "2026-02-27T08:16:29.484916"
   },
   {
     "approval_id": "DEBBBB49",
@@ -276,6 +281,7 @@
     "action": "Disable AD account 'admin' \u2014 1200 failed logins from 203.0.113.42",
     "target": "203.0.113.42",
     "risk_score": 85,
-    "status": "PENDING"
+    "status": "APPROVED",
+    "resolved": "2026-02-27T08:16:35.078439"
   }
 ]
