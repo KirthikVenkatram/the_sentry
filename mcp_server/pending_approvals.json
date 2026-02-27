@@ -113,5 +113,169 @@
     "risk_score": 85,
     "status": "APPROVED",
     "resolved": "2026-02-26T21:48:15.026984"
+  },
+  {
+    "approval_id": "E33925F9",
+    "timestamp": "2026-02-26T22:04:42.259843",
+    "action": "Disable AD account 'admin' \u2014 1800 failed logins from 203.0.113.42",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T22:04:50.647697"
+  },
+  {
+    "approval_id": "44582BC0",
+    "timestamp": "2026-02-26T22:04:53.463729",
+    "action": "Isolate host 10.0.0.22 \u2014 reached 15 internal hosts",
+    "target": "10.0.0.22",
+    "risk_score": 60,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T22:05:15.700178"
+  },
+  {
+    "approval_id": "16AFEE1C",
+    "timestamp": "2026-02-26T22:05:14.500923",
+    "action": "Disable account 'john.smith' \u2014 login from Sudan",
+    "target": "john.smith",
+    "risk_score": 60,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T22:06:18.737946"
+  },
+  {
+    "approval_id": "68BC56EF",
+    "timestamp": "2026-02-26T22:05:56.459450",
+    "action": "Block 185.220.101.5 + isolate 10.0.0.5 \u2014 50.32GB sent to Iran",
+    "target": "10.0.0.5",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T22:06:23.513909"
+  },
+  {
+    "approval_id": "88897EA3",
+    "timestamp": "2026-02-26T22:07:29.569900",
+    "action": "Block scanner 45.33.22.11 \u2014 893 ports scanned",
+    "target": "45.33.22.11",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T22:07:37.040022"
+  },
+  {
+    "approval_id": "CE51CBD6",
+    "timestamp": "2026-02-26T23:28:41.650158",
+    "action": "Disable AD account 'admin' \u2014 1800 failed logins from 203.0.113.42",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:30:26.112608"
+  },
+  {
+    "approval_id": "38BE685C",
+    "timestamp": "2026-02-26T23:29:54.839027",
+    "action": "Isolate host 10.0.0.22 \u2014 reached 15 internal hosts",
+    "target": "10.0.0.22",
+    "risk_score": 60,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:30:20.655398"
+  },
+  {
+    "approval_id": "0C84D2D5",
+    "timestamp": "2026-02-26T23:30:19.506748",
+    "action": "Disable account 'john.smith' \u2014 login from Sudan",
+    "target": "john.smith",
+    "risk_score": 60,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:30:31.215620"
+  },
+  {
+    "approval_id": "3E2D97E4",
+    "timestamp": "2026-02-26T23:30:56.564347",
+    "action": "Block 185.220.101.5 + isolate 10.0.0.5 \u2014 44.06GB sent to Iran",
+    "target": "10.0.0.5",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:31:04.933638"
+  },
+  {
+    "approval_id": "E180B545",
+    "timestamp": "2026-02-26T23:31:24.732119",
+    "action": "Disable AD account 'admin' \u2014 1800 failed logins from 203.0.113.42",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:31:32.625325"
+  },
+  {
+    "approval_id": "A46AA567",
+    "timestamp": "2026-02-26T23:32:14.617189",
+    "action": "Disable account 'bob.jones' \u2014 135 admin endpoint attempts",
+    "target": "10.0.0.45",
+    "risk_score": 60,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:32:44.732057"
+  },
+  {
+    "approval_id": "3CC8B539",
+    "timestamp": "2026-02-26T23:32:29.570167",
+    "action": "Block scanner 45.33.22.11 \u2014 893 ports scanned",
+    "target": "45.33.22.11",
+    "risk_score": 85,
+    "status": "APPROVED",
+    "resolved": "2026-02-26T23:32:36.287495"
+  },
+  {
+    "approval_id": "76D6FF11",
+    "timestamp": "2026-02-27T01:55:16.689608",
+    "action": "Disable account 'john.smith' \u2014 login from Sudan",
+    "target": "john.smith",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "FFAD88B5",
+    "timestamp": "2026-02-27T01:55:18.910977",
+    "action": "Disable AD account 'admin' \u2014 1500 failed logins from 203.0.113.42",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "65F12499",
+    "timestamp": "2026-02-27T01:55:26.780006",
+    "action": "Isolate host 10.0.0.22 \u2014 reached 15 internal hosts",
+    "target": "10.0.0.22",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "19F6B3F7",
+    "timestamp": "2026-02-27T01:55:56.766552",
+    "action": "Block 185.220.101.5 + isolate 10.0.0.5 \u2014 31.43GB sent to Iran",
+    "target": "10.0.0.5",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "D3666033",
+    "timestamp": "2026-02-27T01:57:18.206615",
+    "action": "Disable account 'bob.jones' \u2014 90 admin endpoint attempts",
+    "target": "10.0.0.45",
+    "risk_score": 60,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "E52DB77C",
+    "timestamp": "2026-02-27T01:57:29.880740",
+    "action": "Block scanner 45.33.22.11 \u2014 744 ports scanned",
+    "target": "45.33.22.11",
+    "risk_score": 85,
+    "status": "PENDING"
+  },
+  {
+    "approval_id": "DEBBBB49",
+    "timestamp": "2026-02-27T02:47:06.173397",
+    "action": "Disable AD account 'admin' \u2014 1200 failed logins from 203.0.113.42",
+    "target": "203.0.113.42",
+    "risk_score": 85,
+    "status": "PENDING"
   }
 ]

@@ -4,3 +4,6 @@
 [IDENTITY] DISABLED USER: unknown REASON: LOW brute force from unknown (0 attempts)
 [IDENTITY] DISABLED USER: unknown REASON: LOW brute force from unknown (0 attempts)
 [IDENTITY] DISABLED USER: john.smith REASON: Impossible travel — login from Sudan
+[IDENTITY] DISABLED USER: testuser REASON: LOW brute force from 1.2.3.4 (75 attempts)
+[IDENTITY] DISABLED USER: bob REASON: MEDIUM brute force from 5.6.7.8 (150 attempts)
+[IDENTITY] DISABLED USER: unknown REASON: LOW brute force from unknown (0 attempts)

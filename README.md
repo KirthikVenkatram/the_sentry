@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ Sentry Defense Grid
+# 🛡️ The Sentry
 
 ### Autonomous AI-Powered Security Operations Platform
 

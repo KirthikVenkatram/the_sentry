@@ -28,5 +28,23 @@
     "sender": "Alpha",
     "confidence": 60,
     "message": "IMPOSSIBLE_TRAVEL [HIGH]: Disabled 'john.smith' \u2014 login from Sudan"
+  },
+  {
+    "timestamp": "2026-02-26T23:35:32.714298",
+    "sender": "Alpha",
+    "confidence": 10,
+    "message": "BRUTE_FORCE [LOW]: Disabled 'testuser' \u2014 1.2.3.4 (75 attempts)"
+  },
+  {
+    "timestamp": "2026-02-26T23:36:23.259428",
+    "sender": "Alpha",
+    "confidence": 35,
+    "message": "BRUTE_FORCE [MEDIUM]: Disabled 'bob' \u2014 5.6.7.8 (150 attempts)"
+  },
+  {
+    "timestamp": "2026-02-27T04:56:30.230147",
+    "sender": "Alpha",
+    "confidence": 10,
+    "message": "BRUTE_FORCE [LOW]: Disabled 'unknown' \u2014 unknown (0 attempts)"
   }
 ]

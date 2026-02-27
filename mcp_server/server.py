@@ -27,6 +27,7 @@ from starlette.routing import Route, Mount
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from elasticsearch import Elasticsearch
+from datetime import datetime
 import requests as http_requests
 from urllib.parse import parse_qs
 
@@ -73,44 +74,86 @@ SCENARIO_EMOJI = {
 
 
 def send_slack_notification(scenario: str, severity: str, attack_data: dict,
-                             actions_taken: list):
-    """Send auto-remediation notification to Slack (LOW/MEDIUM)."""
+                             actions_taken: list, agent: str = "",
+                             case_id: str = ""):
+    """Send rich auto-remediation notification to Slack for LOW/MEDIUM."""
     if not SLACK_WEBHOOK_URL:
         return
 
-    s_emoji = SEVERITY_EMOJI.get(severity, "⚪")
+    s_emoji  = SEVERITY_EMOJI.get(severity, "⚪")
     sc_emoji = SCENARIO_EMOJI.get(scenario, "❓")
+    title    = scenario.replace("_", " ").title()
     action_text = "\n".join([f"• {a}" for a in actions_taken])
+    ts_now   = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    # Build dynamic fields based on what attack_data contains
+    fields = []
+    if attack_data.get("source_ip"):
+        fields.append({"type": "mrkdwn", "text": f"*Source IP:*\n`{attack_data['source_ip']}`"})
+    if attack_data.get("dest_ip"):
+        fields.append({"type": "mrkdwn", "text": f"*Destination:*\n`{attack_data['dest_ip']}`"})
+    if attack_data.get("username"):
+        fields.append({"type": "mrkdwn", "text": f"*User:*\n`{attack_data['username']}`"})
+    if attack_data.get("attempt_count"):
+        fields.append({"type": "mrkdwn", "text": f"*Attempts:*\n`{attack_data['attempt_count']}`"})
+    if attack_data.get("total_gb"):
+        fields.append({"type": "mrkdwn", "text": f"*Volume:*\n`{attack_data['total_gb']} GB`"})
+    if attack_data.get("port_count"):
+        fields.append({"type": "mrkdwn", "text": f"*Ports Scanned:*\n`{attack_data['port_count']}`"})
+    if attack_data.get("host_count"):
+        fields.append({"type": "mrkdwn", "text": f"*Hosts Reached:*\n`{attack_data['host_count']}`"})
+    if attack_data.get("country"):
+        fields.append({"type": "mrkdwn", "text": f"*Country:*\n`{attack_data['country']}`"})
+
+    fields.append({"type": "mrkdwn", "text": f"*Severity:*\n{s_emoji} `{severity}`"})
+    fields.append({"type": "mrkdwn", "text": f"*Agent:*\n🤖 `{agent or 'Auto'}`"})
+
+    if case_id:
+        fields.append({"type": "mrkdwn", "text": f"*Case:*\n📋 `{case_id}`"})
+
+    # Color bar — green for LOW, yellow for MEDIUM
+    color = "#36a64f" if severity == "LOW" else "#f0a500"
 
     payload = {
-        "blocks": [
+        "attachments": [
             {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": f"{sc_emoji} {scenario.replace('_', ' ').title()} — {s_emoji} {severity}"
-                }
-            },
-            {
-                "type": "section",
-                "fields": [
-                    {"type": "mrkdwn", "text": f"*Source IP:*\n`{attack_data.get('source_ip', 'N/A')}`"},
-                    {"type": "mrkdwn", "text": f"*Severity:*\n{s_emoji} {severity}"},
-                    {"type": "mrkdwn", "text": f"*Agent:*\nAuto-Response"},
-                    {"type": "mrkdwn", "text": f"*Status:*\n✅ Auto-Remediated"},
+                "color": color,
+                "blocks": [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": f"{s_emoji} AUTO-RESOLVED — {sc_emoji} {title}"
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "fields": fields[:8]
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f"*Actions Taken:*\n{action_text}"
+                        }
+                    },
+                    {
+                        "type": "context",
+                        "elements": [
+                            {
+                                "type": "mrkdwn",
+                                "text": f"🕐 {ts_now} | Sentry Defense Grid | No human intervention required"
+                            }
+                        ]
+                    }
                 ]
-            },
-            {
-                "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*Actions Taken:*\n{action_text}"}
-            },
-            {"type": "divider"}
+            }
         ]
     }
 
     try:
         http_requests.post(SLACK_WEBHOOK_URL, json=payload, timeout=5)
-        logger.info(f"📨 Slack notification sent: {scenario} [{severity}]")
+        logger.info(f"📨 Slack auto-resolve sent: {scenario} [{severity}]")
     except Exception as e:
         logger.error(f"Slack notification failed: {e}")
 
@@ -527,13 +570,20 @@ async def handle_alert_webhook(request: Request) -> JSONResponse:
     logger.info(f"🚨 ALERT RECEIVED: scenario={scenario}")
 
     # Query Elastic for real attack data
-    try:
-        es          = get_elastic_client()
-        attack_data = fetch_attack_data(es, scenario)
-        logger.info(f"📦 ATTACK DATA: {attack_data}")
-    except Exception as e:
-        logger.error(f"Elastic query failed: {e}")
-        attack_data = {}
+    # Pass mock=true in body to bypass Elastic query (for testing)
+    use_mock = str(body.get("mock", "false")).lower() == "true"
+
+    if use_mock:
+        attack_data = {k: v for k, v in body.items()
+                    if k not in ("scenario", "mock")}
+        logger.info(f"🧪 MOCK MODE: using provided data")
+    else:
+        try:
+            es          = get_elastic_client()
+            attack_data = fetch_attack_data(es, scenario)
+        except Exception as e:
+            logger.error(f"Elastic query failed: {e}")
+            attack_data = {}
 
     # Score
     payload        = {**body, **attack_data, "scenario": scenario}
@@ -587,15 +637,35 @@ async def handle_alert_webhook(request: Request) -> JSONResponse:
         result["approval_id"] = approval_id
 
     else:
-        # Auto-remediate
+        # ── AUTO-REMEDIATE ────────────────────────────────────────────────────
         actions = execute_remediation(scenario, severity, attack_data, risk_score)
         result["actions_taken"].extend(actions)
 
-        # Send Slack notification
-        send_slack_notification(scenario, severity, attack_data, actions)
+        # Auto-create case for HIGH (needs_approval=False but still HIGH)
+        case_id = ""
+        if severity in ("HIGH", "CRITICAL"):
+            case = elastic_integrations.create_elastic_case(
+                title=f"[{severity}] {scenario.replace('_', ' ').title()} Detected",
+                description=json.dumps(result, indent=2),
+                tags=[scenario.lower(), severity.lower(), agent.lower()],
+            )
+            result["case_created"] = case
+            # Extract case ID for Slack
+            if "CASE-" in case:
+                case_id = "CASE-" + case.split("CASE-")[1].split(" ")[0].rstrip("'.")
 
-    # Auto-create case for HIGH/CRITICAL
-    if severity in ("HIGH", "CRITICAL"):
+        # Send rich Slack notification with all details  ← CHANGED
+        send_slack_notification(
+            scenario=scenario,
+            severity=severity,
+            attack_data=attack_data,
+            actions_taken=actions,
+            agent=agent,
+            case_id=case_id,
+        )
+
+    # Auto-create case for HIGH/CRITICAL that needed approval
+    if needs_approval and severity in ("HIGH", "CRITICAL"):
         case = elastic_integrations.create_elastic_case(
             title=f"[{severity}] {scenario.replace('_', ' ').title()} Detected",
             description=json.dumps(result, indent=2),
