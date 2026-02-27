@@ -50,13 +50,13 @@
 |  | sentry-auth-logs     | ---> |                                      |    |
 |  | sentry-network-logs  | ---> |               KIBANA                 |    |
 |  +----------------------+      |                                      |    |
-|                                |  ES|QL Detection Rules                |    |
-|                                |  - Brute Force (2m)                   |    |
-|                                |  - Impossible Travel (5m)             |    |
-|                                |  - Data Exfiltration (5m)             |    |
-|                                |  - Port Scan (5m)                     |    |
-|                                |  - Lateral Movement (5m)              |    |
-|                                |  - Privilege Escalation (5m)          |    |
+|                                |  ES|QL Detection Rules               |    |
+|                                |  - Brute Force (2m)                  |    |
+|                                |  - Impossible Travel (5m)            |    |
+|                                |  - Data Exfiltration (5m)            |    |
+|                                |  - Port Scan (5m)                    |    |
+|                                |  - Lateral Movement (5m)             |    |
+|                                |  - Privilege Escalation (5m)         |    |
 |                                +--------------------+-----------------+    |
 |                                                     | Webhook POST         |
 +-----------------------------------------------------+----------------------+
@@ -69,10 +69,10 @@
 |                                                                            |
 |  1. Receive detection from Kibana                                          |
 |  2. Query Elasticsearch (ES|QL)                                            |
-|  3. Score severity: LOW / MEDIUM / HIGH / CRITICAL                        |
+|  3. Score severity: LOW / MEDIUM / HIGH / CRITICAL                         |
 |                                                                            |
 |  LOW / MEDIUM                 HIGH / CRITICAL                              |
-|  -----------------            ----------------------------                  |
+|  -----------------            ----------------------------                 |
 |  Auto-remediation             Slack approval required                      |
 |  - Disable user               [APPROVE] [DENY]                             |
 |  - Block IP                   Human triggers /webhook/slack                |
@@ -85,7 +85,7 @@
              |                                      |
              v                                      v
 +---------------------------+        +----------------------------------+
-|           SLACK           |        |      ELASTIC AGENT BUILDER      |
+|           SLACK           |        |      ELASTIC AGENT BUILDER       |
 |      #sentry-alerts       |        |                                  |
 |                           |        |  Agent Alpha  - Identity         |
 |  CRITICAL Alert           |        |  Agent Beta   - Network          |
